@@ -1,0 +1,841 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<title>Insurance Estimate Form</title>
+
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	
+	<link media="all" type="text/css" rel="stylesheet" href="css/bootstrap.css">
+	<link media="all" type="text/css" rel="stylesheet" href="css/styles.css">
+	<link media="all" type="text/css" rel="stylesheet" href="css/tooltipster.css">
+
+	<link href='http://fonts.googleapis.com/css?family=Varela+Round' rel='stylesheet' type='text/css'>
+</head>
+<body>
+<div class="container" id="main">
+   		
+    <form id="mainForm" method="POST" action="/submit"> 
+    <div class="btn-group" id="menuView">
+      <a href="#autos" class="btn disabled" data-show="autos">Autos</a>
+      <a href="#drivers" class="btn disabled" data-show="drivers">Drivers</a>
+      <a href="#coverage" class="btn disabled" data-show="coverage">Coverage</a>
+      <a href="#incidents" class="btn disabled" data-show="incidents">Incidents</a>
+      <a href="#contact" class="btn disabled" data-show="contact">Contact</a>
+    </div>
+	<div id="canvas"></div>
+    </form>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+<script id="driverAddButtons" type="text/template">
+<div class="span11">
+	<div class="btn-group">
+		<a class="btn dropdown-toggle" data-toggle="dropdown" href="#drivers">Add Driver<span class="caret"></span></a>
+		<ul class="dropdown-menu">
+			<li class="dropdown-header">Add Your</li>
+			<li><a href="#drivers" data-add="Spouse">Spouse</a></li>
+			<li><a href="#drivers" data-add="Child">Child</a></li>
+			<li><a href="#drivers" data-add="Other">Other</a></li>
+		</ul>
+	</div>
+<a href="#coverage" class="pull-right btn btn-large btn-primary">Next Step | Coverages <i class="icon-white icon-arrow-right"></i></a>
+</div>
+</script>
+
+
+	<!--
+	            <label class="control-label" for="activeLicense">Active License?</label>
+                <label class="radio inline"><input name="activeLicense" type="radio" value="true" id="activeLicense" <% if ( driver.activeLicense == true ) { %>checked<% } %>> Yes</label>
+                <label class="radio inline"><input name="activeLicense" type="radio" value="false" id="activeLicense" <% if ( driver.activeLicense == false) { %>checked<% } %>> No</label>
+    
+    --->
+	<script id="driverTemplate" type="text/template">
+		<div class="span12"><h2>Add a Driver | <%= _.str.capitalize(driver.RelationshipToApplicant) %></h2></div>
+		<div class="row">
+			<div class="span5">
+				<label for="driverName">Driver Name</label>
+				<input type="text" id="driverName" name="driverName" class="input-xlarge" value="<%= driver.driverName %>"> 
+				<span class="help-block">First and last name</span>
+    	    </div>
+			<div class="span3">
+				<label for="BirthDate">Date of Birth</label>
+				<input type="text" id="BirthDate" name="BirthDate" class="input-medium" maxlength="10" value="<%= driver.BirthDate %>">
+				<span class="help-block">MM/DD/YYYY</span>			
+			</div>
+			<div class="span2">
+        	    <label for="Gender">Your Gender</label>
+    	        <label class="radio inline"><input name="Gender" type="radio" value="Male" id="Gender" <% if ( driver.Gender == 'Male' ){ %>checked<% } %>> Male</label>
+    	        <label class="radio inline"><input name="Gender" type="radio" value="Female" id="Gender" <% if ( driver.Gender == 'Female' ){ %>checked<% } %>> Female</label>
+	        </div>
+			<div class="span2">
+				<label class="control-label" for="MaritalStatus">Married?</label>
+				<label class="radio inline"><input name="MaritalStatus" type="radio" value="Married" id="MaritalStatus" <% if ( driver.MaritalStatus == "Married" ){ %>checked<% } %>> Yes</label>
+	            <label class="radio inline"><input name="MaritalStatus" type="radio" value="Single" id="MaritalStatus" <% if ( driver.MaritalStatus == "Single" ){ %>checked<% } %>> No</label>
+	        </div>
+		</div>
+		<div class="row">
+			<div class="span2">
+				<label for="firstLicense">First License Age</label>
+				<select id="firstLicense" class="input-small" name="firstLicense">
+					<option></option>
+				</select>
+			</div>
+			<div class="span2">
+				<label for="licenseState">License State</label>
+				<select id="licenseState" class="input-small" name="licenseState">
+					<option></option>
+					<% _.each( window.App.Settings.States, function( state, ab ) { %>  
+						<option value="<%= ab %>" <% if( ab == driver.licenseState ){ %>selected<% } %>><%= ab %></option> 
+					<% }); %>					
+				</select>
+			</div>			
+			<div class="span2">
+	            <label class="control-label" for="activeLicense">Active License?</label>
+                <label class="radio inline"><input name="activeLicense" type="radio" value="true" id="activeLicense" <% if ( driver.activeLicense == true ) { %>checked<% } %>> Yes</label>
+                <label class="radio inline"><input name="activeLicense" type="radio" value="false" id="activeLicense" <% if ( driver.activeLicense == false) { %>checked<% } %>> No</label>
+			</div>
+			<div class="span4">
+                <label class="control-label" for="EverSuspended">License EVER suspended?</label>
+                <label class="radio inline"><input name="EverSuspended" type="radio" value="1" id="EverSuspended" <% if ( driver.EverSuspended == "1" ) { %>checked<% } %>> Yes</label>
+                <label class="radio inline"><input name="EverSuspended" type="radio" value="0" id="EverSuspended" <% if ( driver.EverSuspended == "0") { %>checked<% } %>> No</label>
+			</div>
+		</div>
+		<div class="row">
+			<div class="span3">
+				<label for="Education">Education level</label>
+				<select id="Education" name="Education">
+					<% _.each(window.App.Settings.Education, function(edu){ %>  
+						<option value="<%= edu %>" <% if ( driver.Education == edu ){ %>selected<% } %>><%= _.str.humanize(edu) %></option> 
+					<% }); %>
+				</select>
+			</div>
+			<div class="span2">
+				<label for="SelfRating">Credit Rating</label>
+				<select id="SelfRating" name="SelfRating" class="input-medium">
+				<% _.each(window.App.Settings.CreditRatings, function(i) { %>  
+					<option value="<%= i %>" <% if ( driver.SelfRating == i ){ %>selected<% } %>><%= _.str.capitalize(i) %></option> 
+				<% }); %>
+				</select>
+			</div>
+			<div class="span4">
+				<label for="Occupation">Occupation</label>
+				<select id="Occupation" name="Occupation" class="input-xlarge">
+				<% _.each( window.App.Settings.Occupations, function(occ) { %>  
+					<option value="<%= occ %>" <% if ( driver.Occupation == occ ){ %>selected<% } %>><%= _.str.humanize(occ) %></option> 
+				<% }); %>
+				</select>
+			</div>
+			<div class="span2">
+                <label class="control-label" for="sr22">File SR-22?</label>
+                <label class="radio inline"><input name="sr22" type="radio" value="true" id="sr22" <% if ( driver.sr22 == true ) { %>checked<% } %>> Yes</label>
+                <label class="radio inline"><input name="sr22" type="radio" value="false" id="sr22" <% if ( driver.sr22 == false) { %>checked<% } %>> No</label>
+			</div>
+		</div>		
+		<div class="row">
+			<div class="span5">
+			<label for="primary">Primary Vehicle <%= driver.vehicle %></label>
+			<select id="primary">
+			<% _.each( vehicles, function( vehicle, i ) { %>  
+				<option value="<%= vehicle.id %>" <% if ( vehicle.id == driver.primary ){ %>selected<% } %>><%= vehicle.year + ' ' + vehicle.make + ' ' + vehicle.model %></option>
+			<% }); %>		
+			</select>
+			</div>
+		</div>
+		<div class="row">
+			<div class="span10">
+				<button id="deleteDriver" class="btn btn-inverse hide">Delete Driver</button>
+				<div class="pull-right">
+				<button id="cancelDriver" class="btn btn-large hide">Cancel</button>				
+				<button id="saveDriver" class="btn btn-primary btn-large">Save Driver <i class="icon-arrow-right icon-white"></i></button>
+				</div>
+			</div> 
+		</div>
+	</script>
+    
+    <script id="coverageTemplate" type="text/template">
+		<h1>Your Current Coverage</h1>
+    	<div class="row">
+			<div class="span12">
+				<label class="checkbox">I am currently insured, or my policy expired less than 30 days ago
+					<input type="checkbox" value="1" name="currentlyInsured" id="currentlyInsured" <% if ( currentlyInsured === "1" ){ %>checked<% } %>>
+				</label>
+			</div>
+		</div>
+		<div id="coverageOptions" class="row">
+			<div class="span5">
+				<div class="field">
+					<label for="insuranceCompany">Current Insurance Company</label>
+					<input type="text" id="insuranceCompany" name="insuranceCompany" class="input-xlarge" data-provide="typeahead" autocomplete="off" value="<%= insuranceCompany %>" /> 
+					<span class="help-block">GEICO, Progressive, Nationwide, etc</span>
+				</div>
+				<div class="field">
+					<label for="coverageExpires">When does your current policy expire?</label>
+					<select id="coverageExpires">
+						<% _.each(window.App.Settings.CoverageExpires, function( coverage ){ %>  
+							<option value="<%= coverage.value %>" <% if ( coverage.value === coverageExpires ){ %>selected<% } %>><%= coverage.name %></option> 
+						<% }); %>		
+					</select>
+				</div>
+		</div>
+		<div class="span5">
+			<div class="field">
+				<label for="coverageLength">How long have you been a customer with them?</label>
+					<select id="coverageLength">
+						<% _.each(window.App.Settings.CoverageLength, function( len ){ %>  
+							<option value="<%= len.value %>" <% if ( len.value === coverageLength ){ %>selected<% } %>><%= len.name %></option> 
+						<% }); %>		
+					</select>
+			</div>
+			<div class="field">
+				<label for="coverageContinuos">Continuous Coverage?</label>
+				<select id="coverageContinuos">
+					<% _.each(window.App.Settings.CoverageContinuous, function( coverage ){ %>  
+						<option value="<%= coverage.value %>" <% if ( coverage.value === coverageContinuos ){ %>selected<% } %>><%= coverage.name %></option> 
+					<% }); %>		
+				</select>
+				<span class="help-block">How long you have been insured under any company</span>
+			</div>
+		</div>
+		</div>
+		<div class="row">
+			<div class="span10">
+				<h2>Choose Your Desired Coverage</h2>
+				<div id="chooseCoverage"></div>				
+			</div>
+		</div>
+		<hr />
+		<div class="row">
+			<div class="span10">
+			<a href="#incidents" id="saveCoverage" class="pull-right btn btn-large btn-primary">Next Step | Incidents <i class="icon-arrow-right icon-white"></i></a>
+			</div>
+		</div>    
+    </script>
+
+    <script id="vehicleTitleTemplate" type="text/template">
+		<div class="span2">
+			<div class="vehicleTitle">Year</div>
+			<div class="vehicle vehicleYear"><%= year %></div>
+		</div>
+		<div class="span2">
+			<div class="vehicleTitle">Make</div>
+			<div class="vehicle vehicleMake"><%= make %></div>		
+		</div>
+		<div class="span4">
+			<div class="vehicleTitle">Model</div>
+			<div class="vehicle vehicleModel"><%= model %></div>		
+		</div>
+		<div class="span3">
+			<div class="vehicleTitle"></div>
+			<div class="vehicle vehicleTrim"><%= trim %></div>		
+		</div>				
+	</script>
+    
+    <script id="vehicleOptionTemplate" type="text/template">
+        <table class="table table-condensed box_round box_shadow">
+        	<thead><tr><td colspan="<%= mod %>"><%= title %> 
+				<% if ( previous !== null ){ %><a class="back btn pull-right" data-unset="<%= previous %>">Back</a><% } %>
+			</td></tr></thead>
+            <tbody></tbody>
+        </table>
+	</script>
+	
+	<script id="vehicleOptionForm" type="text/template">
+		<div class="span6">
+			<div class="field">
+				<label class="control-label" for="doesWorkSchool">This <%= make %> <%= model %> is primarly for</label>
+				<label class="radio inline"><input name="doesWorkSchool" type="radio" value="CommuteWork" id="doesWorkSchool" <% if ( doesWorkSchool == "CommuteWork" ) { %>checked<% } %>> Work</label>
+				<label class="radio inline"><input name="doesWorkSchool" type="radio" value="CommuteSchool" id="doesWorkSchool" <% if ( doesWorkSchool == "CommuteSchool") { %>checked<% } %>> School</label>
+				<label class="radio inline"><input name="doesWorkSchool" type="radio" value="Pleasure" id="doesWorkSchool" <% if ( doesWorkSchool == "Pleasure") { %>checked<% } %>> Pleasure</label>
+
+			</div>
+			<div class="field row" id="howFarField">
+				<div class="span3">
+				<label for="howFar">How far is work/school?</label>
+					<select id="howFar" name="howFar">
+						<option value="under5" <% if ( howFar == "under5") { %>selected<% } %>>Less than 5 miles</option>
+						<option value="5" <% if ( howFar == "5") { %>selected<% } %>>5 miles</option>
+						<option value="10" <% if ( howFar == "10") { %>selected<% } %>>10 miles</option>
+						<option value="15" <% if ( howFar == "15") { %>selected<% } %>>15 miles</option>
+						<option value="20" <% if ( howFar == "20") { %>selected<% } %>>20 miles</option>
+						<option value="30" <% if ( howFar == "30") { %>selected<% } %>>30 miles</option>
+						<option value="over30" <% if ( howFar == "over30") { %>selected<% } %>>Over 30 miles</option>                    
+					</select>
+				</div>
+				<div class="span3">
+					<label for="WeeklyCommuteDays">How Many Days per Week?</label>
+					<select id="WeeklyCommuteDays" name="WeeklyCommuteDays" class="input-mini">
+					<% for( $i=1; $i<8; $i++ ){ %>
+						<option value="<%= $i %>" <% if ( $i == WeeklyCommuteDays ){ %>selected<% } %>><%= $i %></option>
+					<% } %>
+					</select>
+				</div>
+			</div>
+			<div class="field">
+			<label for="averageMiles">Average mileage driven each year</label>
+			<select id="averageMiles" name="averageMiles">
+				<option value="5000" <% if ( averageMiles == "5000") { %>selected<% } %>>5,000 miles</option>
+				<option value="7500" <% if ( averageMiles == "7500") { %>selected<% } %>>7,500 miles</option>
+				<option value="10000" <% if ( averageMiles == "10000") { %>selected<% } %>>10,000 miles</option>
+			</select>
+			</div>
+		</div>
+		<div class="span5">
+			<div class="field">
+			<label class="control-label" for="Ownership">Is this <%= make %> <%= model %> owned, leased, or financed?</label>
+			<label class="radio inline"><input name="Ownership" type="radio" value="Owned" id="Ownership" <% if ( Ownership == "Owned" ) { %>checked<% } %>> Owned</label>
+			<label class="radio inline"><input name="Ownership" type="radio" value="Leased" id="Ownership" <% if ( Ownership == "Leased" ) { %>checked<% } %>> Leased</label>
+			<label class="radio inline"><input name="Ownership" type="radio" value="Financed" id="Ownership" <% if ( Ownership == "Financed" ) { %>checked<% } %>> Financed</label>
+			</div>
+			<div class="field">
+			<label for="CollisionDeductible">Deductible for collisions <div class="fieldtip" data-toggle="tooltip" data-title="data title" data-trigger="hover" title="This tooltip explains what a deductible is"></div></label>
+			<select id="CollisionDeductible" name="CollisionDeductible">
+				<% _.each( window.App.Settings.Deductibles, function( deductible ) { %>  
+					<option value="<%= deductible %>" <% if( CollisionDeductible == deductible ){ %>selected<% } %>>$<%= deductible %>
+					 <% if ( deductible == '0' ){ %> (No Coverage) <% } %><% if ( deductible == '500' ){ %> (Recommended) <% } %></option> 
+				<% }); %>			
+			</select>
+			</div>
+			<div class="field">
+			<label for="ComprehensiveDeductible">Deductible for comprehensive</label>
+			<select id="ComprehensiveDeductible" name="ComprehensiveDeductible">
+				<% _.each( window.App.Settings.Deductibles, function( deductible ) { %>  
+					<option value="<%= deductible %>" <% if( ComprehensiveDeductible == deductible ){ %>selected<% } %>>$<%= deductible %>
+					 <% if ( deductible == '0' ){ %> (No Coverage) <% } %><% if ( deductible == '500' ){ %> (Recommended) <% } %></option> 
+				<% }); %>			
+			</select>
+			</div>            
+		</div>
+    </script>
+
+    <script id="vehicleItemTemplate" type="text/template">
+		<li data-edit="<%= id %>" >
+			<button class="pull-right btn hide">Edit <i class="icon-pencil"></i></button>
+			<h5>Car <%= id %> </h5>
+			<h3><%= year %> <%= make %> <%= model %> <%= trim %></h3>
+			<h5>Deductible: $<%= CollisionDeductible %> / $<%= ComprehensiveDeductible %></h5>
+		</li>
+	</script>
+
+    <script id="driverItemTemplate" type="text/template">
+		<li data-edit="<%= id %>">
+			<button class="pull-right btn hide">Edit <i class="icon-pencil"></i></button>
+			<h5>Driver <%= id %> - <%= _.str.capitalize(RelationshipToApplicant) %> | Age <%= age %></h5>
+			<h3><%= driverName %></h3>
+		</li>
+	</script>    
+    
+    <script id="vehicleButtonsTemplate" type="text/template">
+	<div class="row">
+	<div class="span10">
+		<button id="editAuto" class="btn">Edit Car Make / Model</button>
+		<button id="deleteAuto" class="btn btn-inverse">Delete Car</button>
+		<button id="saveAuto" class="btn btn-primary btn-large pull-right">Save Car <i class="icon-arrow-right icon-white"></i></button>
+	</div>
+	</div>
+	</script>
+    
+    <script id="vehicleListButtonsTemplate" type="text/template">
+		<div class="row">
+			<div class="span11">
+			<button class="btn" data-add="auto">Add Car</button>
+			<a href="#drivers" class="pull-right btn btn-large btn-primary">Next Step | Drivers <i class="icon-white icon-arrow-right"></i></a>
+			</div>
+		</div>
+	</script>
+
+    <script id="incidentDUITemplate" type="text/template">
+		<div class="span6">
+		<label for="description">DUI Type:</label>
+		<select id="description" name="description" class="input-xlarge" style="width:400px;">
+			<% _.each( window.App.Settings.DUI, function( dui ) { %>  
+				<option value="<%= dui %>" <% if ( description == dui ){ %>selected<% } %>><%= _.str.humanize( dui )  %></option> 
+			<% }); %>		
+		</select>
+		</div>
+		<div class="span2">
+			<label for="State">in Which State?</label>
+			<select name="State" id="State" class="input-small">
+				<option value=""></option>
+			<% _.each( window.App.Settings.States, function( state, ab ) { %>  
+				<option value="<%= ab %>" <% if( ab == State ){ %>selected<% } %>><%= ab %></option> 
+			<% }); %>					
+			</select>
+		</div>
+	</script>
+    
+    <script id="incidentTicketTemplate" type="text/template">
+		<div class="span6">
+		<label for="description">Type of Ticket:</label>
+		<select id="description" name="description">
+			<% _.each( window.App.Settings.Tickets, function( ticket ) { %>  
+				<option value="<%= ticket %>" <% if ( description == ticket ){ %>selected<% } %>><%= _.str.humanize( ticket )  %></option> 
+			<% }); %>		
+		</select>
+		</div>
+	</script>    
+    
+    <script id="incidentAccidentTemplate" type="text/template">
+	<div class="row">
+		<div class="span4">
+		<label for="description">What Happened?</label>
+		<select for="description" id="description" name="description">
+			<% _.each( window.App.Settings.Accidents, function( val ) { %>  
+				<option value="<%= val %>" <% if ( description == val ){ %>selected<% } %>><%= _.str.humanize( val )  %></option> 
+			<% }); %>		
+		</select>
+		</div>
+		<div class="span6">
+			<label for="WhatDamaged">What was damaged?</label>
+			<select for="WhatDamaged" id="WhatDamaged">
+				<% _.each( window.App.Settings.WhatDamaged, function( val ) { %> 
+					<option value="<%= val %>" <% if ( WhatDamaged == val ){ %>selected<% } %>><%= _.str.humanize( val )  %></option> 
+				<% }); %>		
+			</select>		
+		</div>
+	</div>
+	<div class="row">
+		<div class="span4">
+			<label for="InsurancePaidAmount">Insurance paid amount</label>
+			<select for="InsurancePaidAmount" id="InsurancePaidAmount">
+				<% _.each( window.App.Settings.PaidAmount, function( val ) { %>  
+					<option value="<%= val.value %>" <% if ( InsurancePaidAmount == val.value ){ %>selected<% } %>><%= _.str.humanize( val.name )  %></option> 
+				<% }); %>		
+			</select>
+			<span class="help-block">OK to estimate</span>
+		</div>
+		<div class="span6">
+			<label for="AtFault">Was the driver at fault?</label>
+            <label class="radio inline"><input name="AtFault" type="radio" value="1" id="AtFault" <% if ( AtFault == 1 ){ %>checked<% } %>> Yes</label>
+	        <label class="radio inline"><input name="AtFault" type="radio" value="0" id="AtFault" <% if ( AtFault == 0 ){ %>checked<% } %>> No</label>
+		</div>
+	</div>
+	</script> 
+        
+    <script id="incidentClaimTemplate" type="text/template">
+	<div class="row">
+		<div class="span4">
+		<label for="description">Claim type:</label>
+		<select for="description" name="description" id="description">
+			<option value="">Please select...</option>
+			<% _.each( window.App.Settings.Claims, function( claim ){  %> 
+				<option value="<%= claim %>" <% if ( description == claim ){ %>selected<% } %>><%= _.str.humanize( claim )  %></option> 
+			<% }); %>		
+		</select>
+		</div>
+		<div class="span6">
+			<label for="WhatDamaged">What was damaged?</label>
+			<select for="WhatDamaged" id="WhatDamaged" name="WhatDamaged">
+				<% _.each( window.App.Settings.WhatDamaged, function( val ) { %> 
+					<option value="<%= val %>" <% if ( WhatDamaged == val ){ %>selected<% } %>><%= _.str.humanize( val )  %></option> 
+				<% }); %>		
+			</select>			
+		</div>
+	</div>
+	<div class="row">
+		<div class="span4">
+			<label for="InsurancePaidAmount">Insurance paid amount</label>
+			<select for="InsurancePaidAmount" id="InsurancePaidAmount">
+				<% _.each( window.App.Settings.PaidAmount, function( val ) { %>  
+					<option value="<%= val.value %>" <% if ( InsurancePaidAmount == val.value ){ %>selected<% } %>><%= _.str.humanize( val.name )  %></option> 
+				<% }); %>		
+			</select>
+			<span class="help-block">OK to estimate</span>
+		</div>
+		<div class="span6">
+			<label for="AtFault">Was the driver at fault?</label>
+            <label class="radio inline"><input name="AtFault" type="radio" value="1" id="AtFault" <% if ( AtFault == 1 ){ %>checked<% } %>> Yes</label>
+	        <label class="radio inline"><input name="AtFault" type="radio" value="0" id="AtFault" <% if ( AtFault == 0 ){ %>checked<% } %>> No</label>
+		</div>
+	</div>
+	</script>    
+    
+    
+    <script id="incidentItemTemplate" type="text/template">
+		<li data-edit="<%= id %>">
+			<button class="btn pull-right hide">Edit <i class="icon-pencil"></i></button>
+			<h3><%= incidentDate %> - <%= _.str.capitalize( incidentType ) %> : <%= _.str.humanize(description) %></h3>
+			<h5><%= driverName %></h5>
+		</li>
+	</script>    
+    
+    <script id="incidentTemplate" type="text/template">
+	<div class="row">
+	<div class="span10">
+		<h2>Traffic Incidents</h2>
+        <h4>Any DUIs, tickets, accidents, or claims in the <span class="underline">past 3 years?</span></h4>
+		<div class="row" style="padding-top:20px;">
+		<div class="span10">
+			<button data-add="incident" class="btn btn-large">Yes</button>
+			<a href="#contact" class="btn btn-primary btn-large" id="finishIncidents">No</a>
+		</div>
+		</div>
+	</div>
+	
+	</script>
+    
+    <script id="incidentListButtonsTemplate" type="text/template">
+		<div class="row">
+			<div class="span11">
+			<button class="btn" data-add="incident">Add Incident</button>
+			<a href="#contact" class="pull-right btn btn-large btn-primary" id="finishIncidents">Last Step <i class="icon-white icon-arrow-right"></i></a>
+			</div>
+		</div>
+	</script>    
+    
+    <script id="incidentReportTemplate" type="text/template">
+		<h3>Add Incident Details</h3>
+		<div class="row">
+			<div class="span5">
+				<label for="incidentType">Type of Incident</label>
+				<select id="incidentType" class="input-xlarge">
+				<% _.each( window.App.Settings.IncidentTypes, function( i ) { %>  
+					<option value="<%= i.value %>" <% if ( i.value  == incident.incidentType ){ %>selected<% } %>><%= i.name %></option> 
+				<% }); %>
+				</select>				
+			</div>
+		</div>
+		<div class="row">
+			<div class="span5">
+				<label for="incidentDriver">Driver</label>
+				<select id="incidentDriver" class="input-xlarge">
+				<% _.each( drivers, function( driver ) { %>  
+					<option value="<%= driver.id %>" <% if ( incident.incidentDriver == driver.id ){ %>selected<% } %>><%= driver.driverName %></option>
+				<% }); %>
+				</select>					
+			</div>
+			<div class="span5">
+				<label for="incidentDate">Date of Incident</label>
+				<input type="text" id="incidentDate" name="incidentDate" class="input-large" value="<%= incident.incidentDate %>">
+				<span class="help-block">MM/YYYY. OK to estimate. Example 05/2013</span>
+			</div>
+		</div>
+		<div id="incidentReport"></div>
+		<div class="row">
+			<div class="span10">
+			<button id="deleteIncident" class="btn btn-inverse">Delete</button>
+			<div class="pull-right">
+			<button id="cancelIncident" class="btn btn-large">Cancel</button>
+			<button id="saveIncident" class="btn btn-primary btn-large">Save <i class="icon-arrow-right icon-white"></i></button>
+			</div>
+			</div>
+		</div>
+	</script>
+    
+	<script id="contactTemplate" type="text/template">
+		<h1><%= name %>, last step!</h1>
+		<div class="row">
+			<div class="span5">
+				<label for="Email">E-mail address</label>
+				<input type="email" name="Email" id="Email" value="<%= Email %>"/>
+				<span class="help-block">Your quotes get sent here. Make sure it is correct!</span>
+			</div>
+			<div class="span5">
+				<label for="Phone">Phone Number</label>
+				<input type="text" name="Phone" id="Phone" value="<%= Phone %>" />
+			</div>
+		</div>
+		<div class="row">
+			<div class="span5">
+				<label for="Address">Home Address</label>
+				<input type="text" name="Address" id="Address" value="<%= Address %>" />
+				<span class="help-block">Street name</span>
+			</div>
+			<div class="span5">
+				<label for="OccupancyDate">How long have you lived here?</label>
+				<select name="OccupancyLength" id="OccupancyLength">
+				<% _.each( window.App.Settings.ResidenceLength, function( val ) { %>  
+					<option value="<%= val.value %>" <% if( val.value == OccupancyLength ){ %>selected<% } %>><%= _.str.humanize( val.name )  %></option> 
+				<% }); %>	
+				</select>
+			</div>
+		</div>
+		<div class="row">
+			<div class="span5">
+				<label for="Address2">&nbsp;</label>
+				<input type="text" name="Address2" id="Address2" value="<%= Address2 %>" />
+				<span class="help-block">Apt # / Suite ( if necessary )</span>
+			</div>
+			<div class="span3">
+				<label for="ResidenceStatus">Rent or Own?</label>
+				<select name="ResidenceStatus" id="ResidenceStatus" class="input-normal">
+				<% _.each( window.App.Settings.ResidenceStatus, function( val ) { %>  
+					<option value="<%= val %>" <% if( val == ResidenceStatus ){ %>selected<% } %>><%= _.str.humanize( val )  %></option> 
+				<% }); %>					
+				</select>
+			</div>		
+			<div class="span3">
+				<label for="Garage">Do you have a garage?</label>
+				<label class="radio inline"><input name="Garage" type="radio" value="true" id="Garage" <% if ( Garage == true ) { %>checked<% } %>> Yes</label>
+				<label class="radio inline"><input name="Garage" type="radio" value="false" id="Garage" <% if ( Garage == false ) { %>checked<% } %>> No</label>
+			</div>	
+		</div>
+		<div class="row">
+			<div class="span3">
+				<label for="City">City</label>
+				<input type="text" name="City" id="City" value="<%= City %>" />
+			</div>
+			<div class="span2">
+				<label for="State">State</label>
+				<select name="State" id="State" class="input-small">
+					<option value=""></option>
+				<% _.each( window.App.Settings.States, function( state, ab ) { %>  
+					<option value="<%= ab %>" <% if( ab == State ){ %>selected<% } %>><%= ab %></option> 
+				<% }); %>					
+				</select>
+			</div>
+			<div class="span5">
+				<label for="ZipCode">Zip Code</label>
+				<input type="text" name="ZipCode" id="ZipCode" class="input-small" maxlength="5" value="<%= ZipCode %>" />
+			</div>
+		</div>
+		<div class="row">
+			<div class="span11">
+				<button class="btn btn-primary btn-large pull-right">Finish!</button>
+			</div>
+		</div>
+	</script>
+    
+		    // these 2 JSON scripts below allow the form to be submitted / sent to an API
+			    <script src="js/lib/json2.js"></script>
+			    <script src="js/lib/json2xml.js"></script>
+			        
+			// JavaScript files for underlying app function
+				<script src="js/lib/jquery.maskedinput.js"></script>
+				<script src="js/lib/moment.js"></script>
+				<script src="js/lib/bootstrap.min.js"></script>
+				<script src="js/lib/bootstrap.js"></script>
+			    <script src="js/lib/underscore-min.js"></script>
+			    <script src="js/lib/underscore.string.js"></script>
+				<script src="js/lib/backbone-min.js"></script>
+				<script src="js/lib/jquery.tooltipster.min.js"></script>
+			    <script src="js/lib/jquery.validate.js"></script>
+			    <script src="js/lib/jquery.validate.additional.js"></script>
+			
+			// external JavaScript files
+			    <script src="js/base.js"></script>
+				<script src="js/models.js"></script>
+				<script src="js/views.js"></script>
+ 
+
+<script>
+$(document).ready(function(){
+	
+	window.Lead = new App.Models.Lead;
+	window.Lead.get("Contact").set("ZipCode", '' );
+
+
+
+	window.Route = new App.Router;
+	Backbone.history.start();
+			
+	/* 
+	///////////////////////////
+	FORM VALIDATE 
+	///////////////////////////
+	*/	
+	// Extra method for Select boxes to make sure they are not empty
+	$.validator.addMethod("valueNotEquals", function(value, element, arg){
+		return arg != value;
+	}, "Please select an option.");	
+
+	// PRESET OPTIONS 	
+	var valopt = {
+			req	: {required : true},
+			nums	: {
+					required : true,
+					digits	 : true
+			},
+			bday : {
+				required : true,
+				dateITA : true,
+				minage : true,
+				maxage : true,
+			},
+			phone : {
+				required : true,
+				phoneUS : true,
+			},
+			incident : {
+				required : true,
+				dateMY : true,
+				min3years : true,	
+			},
+			normal : {
+				required : true,
+				lettersonly	: true,
+				minWords : 2,
+				minlength: 2,
+				maxlength: 50
+			},
+			normalany : {
+				required : true,
+				minlength: 2,
+				maxlength: 50
+			},
+			bigger : {
+				required : true,
+				minlength: 2,
+				maxlength: 100
+			},
+			zips 	: {
+				required : true,
+				zipcodeUS : true,	
+			},
+			selects : {
+				required: true,
+				valueNotEquals: ""
+			}
+		}
+	
+
+	window.$form = $("#mainForm");
+		$form.on('click','button',function(e){
+			e.preventDefault();	
+		});
+
+	 
+	/*	////// FORM VALIDATION SETUP ///////////
+	*/	// if you need to prevent Enter keypress .bind("keypress",function(e){ if (e.keyCode == 13){return false;}})
+	window.validator = $form.validate({
+		rules : {
+			doesWorkSchool : valopt.req,
+			howFar	 : valopt.selects, 
+			averageMiles : valopt.selects,
+			driverName 	 : valopt.normal,
+			Gender		: valopt.req,
+			licenseState : valopt.req,
+			MaritalStatus	: valopt.req,
+			BirthDate	: valopt.bday, 	
+			firstLicense : valopt.selects,
+			
+			incidentDate : valopt.req,
+			description : valopt.selects,
+			incidentDate : valopt.incident,
+			
+			insuranceCompany : valopt.req,
+			desiredCoverage : valopt.req,
+			
+			Email	: {required:true,email:true},
+			Phone 	: valopt.req,		
+			Address	: valopt.bigger,
+			ZipCode : valopt.zips,
+			City 	: valopt.normalany,
+			State 	: valopt.req,
+			Garage 	: valopt.req,
+			Phone 	: valopt.phone
+		},
+		messages : {
+			desiredCoverage : "Please Select at least the State Minimum for your desired coverage",
+			driverName : {
+				lettersOnly : "Letters only!",
+				minWords : "Please enter first AND last name",	
+			},
+			firstLicense : "Enter your birthdate first",
+			incidentDate : {
+				dateMY : "Please enter a valid date in MM/YYYY format"	
+			}
+		},
+		groups : {
+//			height : "height1 height2",
+//			spouse_height : "spouse_height1 spouse_height2",			
+		},
+		errorPlacement : function(error, ele){
+			var name = ele.attr('name');
+
+			/* DEFAULT ERROR ELEMENTS
+			error.addClass("alert alert-error");			
+			// Handling Radio button erros 
+			if (   
+				name == 'gender' || name == 'married'  || name == 'Garage'
+			){
+				ele.parents('.span2, .span3, .span4').append(error); 
+				return true;
+			}
+			ele.parent().append(error);
+			return true;
+			*/
+			
+			// tooltipster stuff....
+			return false; 
+		},
+		showErrors: function(errorMap, errorList) {
+			// defaults for Tooltipster
+			var defaults = {
+				delay : 0,
+				offsetY : 10,
+				onlyOne : true,
+				trigger : "custom",
+				position : "top-right",
+			};
+			// fix the Valid elements
+			var validEle = this.validElements();
+			
+			// cleanup Valid Elements 
+			_.each( validEle, function( ele ){ 
+				var $validEle = $(ele),
+					$parent;
+				
+				if ( $validEle.attr('type') === 'radio' ){
+					$parent = $validEle.parents('.span2, .span3, .span4, table')
+					$parent.removeClass("error").tooltipster('hide');//.addClass("success");
+				}else{ 
+					$validEle.removeClass('error').tooltipster('hide');//.addClass("success"); 
+				 }
+			});
+			
+			
+			if( errorList.length ) {
+				var $ele = $(errorList[0]['element']),
+					$parent; 
+
+				if ( errorList[0]['element'].type == 'radio' ){
+					$parent = $ele.parents('.span2, .span3, .span4, table');
+					
+					$parent.addClass("error");
+					$parent.tooltipster(defaults);
+					$parent.tooltipster('update', errorList[0]['message']);
+					$parent.tooltipster('show');
+				}else{
+					$ele.addClass("error");
+					$ele.tooltipster(defaults);
+					$ele.tooltipster('update', errorList[0]['message']);
+					$ele.tooltipster('show');	
+				}
+				return false;			
+	        }
+			return true;
+
+		},
+
+		errorElement : "div",
+		ignoreTitle: true, 
+		submitHandler : function(form){
+//			console.log('submitting form...');
+//			console.log( window.Lead.toJSON() );
+			return false;		
+			
+//			form.submit();
+		}
+	});
+	
+	
+//	$('.fieldtip').tooltip();
+	$form.on( "mouseover", ".fieldtip", function(e){
+		$(this).tooltip('show');
+//		$(e.currentTaget).hide();
+	});
+	
+	
+//	$('.fieldtip').tooltipster();	
+
+
+//	$("#driverName").hide();
+	
+
+	$("#Phone").mask("(999) 999-9999",{placeholder:"  "});
+});
+</script>
+
+</body>
+</html>

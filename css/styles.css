@@ -1,0 +1,213 @@
+* {
+	font-family: 'Varela Round', sans-serif;
+}
+
+body{
+	background:url(../img/irongrip.png);
+}
+.container {
+	margin-top:20px;
+	background-color:#fff;	
+	padding:10px 20px;
+	border-radius:15px;
+	border:6px solid #ccc;
+	box-shadow:6px 10px 4px #222;
+}
+#canvas {
+	font-family: 'Varela Round', sans-serif;
+	min-height:500px;
+}
+#menuView {
+	padding:8px 0 30px 8px;	
+}
+#canvas h1{
+	border-bottom:2px solid #eee;
+}
+.tableYear{
+	width:350px;	
+}
+.tableMake{
+	width:90%;
+}
+.tableModel{
+	width:50%;
+}	
+.table thead{
+	background:#f3f3f3;	
+	font-size:16px;
+	font-weight:bold;
+}
+.table thead td{
+	border-top-left-radius: 12px;
+	border-top-right-radius: 12px;
+}
+.table button{
+	width:100%;
+	border:0;
+	background:none;
+    border-radius: 6px;	
+}
+.table button:hover{
+	background:#ddd;
+}
+
+#menuView i{
+	margin-right:6px;	
+}
+
+.table-compare{}
+.table-compare td:first-child{
+	width:150px;	
+}
+.table-compare input{
+	display:block;
+	margin:0 auto;	
+}
+.table-compare td:not(:first-child), .table-compare th:not(:first-child){
+	border-left:1px solid #999;
+	border-top:none;
+	border-bottom:none;	
+}
+
+.table-compare [data-coverage]{
+	text-align:center;	
+}
+.clickable:hover{
+	cursor:pointer;
+}
+.table-compare td:first-child{
+	background-color:#f3f3f3;	
+}
+.active{
+	color:#fff;
+	font-weight:bold;
+	background-color:#003366;
+	text-shadow: 1px 1px 1px #000000;
+}
+.tooltip-inner{
+	font-size:14px;
+	max-width:250px;
+}
+.tooltip.in {
+  opacity: 1;
+  filter: alpha(opacity=100);
+}
+.underline{
+	text-decoration:underline;	
+}
+.field {
+	margin-bottom:20px;
+/*	border:1px solid #bbb; */
+}
+.field label{
+	margin-bottom:0;
+}
+.box_round {
+    border-radius: 12px;
+	background-clip: padding-box;
+}
+.box_shadow {
+	box-shadow: 2px 2px 4px 0px #000;
+}
+
+input.error{
+	background-color:#FCC;
+}
+.alert.error{
+	font-size:12px;
+	color:#C00;	
+}
+input.error, select.error{
+	color:#C00;	
+}
+
+.help-block{
+	margin-top:-8px;
+	
+	font-size:12px;
+	color:#999;
+}
+.fieldtip{
+	width:20px;
+	height:20px;
+	background:#666;
+	display:inline-block;
+	
+}
+.span2.error, .span3.error, .span4.error, .span5.error, .span6.error, .span7.error{
+	background-color:#FCC;
+}
+.vehicleTitle{
+	font-variant:small-caps;
+	font-weight:bold;
+	font-size:16px;	
+	color:#666;
+}
+.vehicle{
+	font-size:24px;	
+	padding:6px 0 20px 0;
+}
+.vehicleList ul, .driverList ul, .incidentList ul{
+	list-style:none;	
+}
+
+.vehicleList h3,h4,h5, .driverList h3,h4,h5, .incidentList h3,h4,h5{
+	margin:0;
+}
+.vehicleList h5, .driverList h5, .incidentList h5{
+	color:#999;
+	font-weight:normal;
+}
+.vehicleList li, .driverList li, .incidentList li{
+	cursor:pointer;
+	padding:5px 0;
+	border-bottom:2px solid #fff;
+}
+.vehicleList li:hover, .driverList li:hover, .incidentList li:hover{
+	border-bottom:2px solid #069;
+	background-color:#f3f3f3;
+}
+.vehicleList .pull-right, .driverList .pull-right, .incidentList .pull-right{
+	margin:20px 20px 0 0;	
+}
+input {
+	text-transform: capitalize;
+}
+
+input[type=email] {
+	text-transform: lowercase;
+}
+
+label{
+	font-size:16px;
+	font-weight:bold;
+}
+
+label.radio{
+	font-weight:normal;	
+}
+
+select{
+	border-radius: 2px;	
+	padding:4px;
+}
+
+.panelAutos, .panelDrivers, .panelCoverage, .panelIncidents, .panelContact{ 
+	background-position:right bottom;
+	background-repeat: no-repeat;
+}
+.panelAutos{
+	background-image:url(../img/car.png);
+}
+.panelDrivers{
+	background-image:url(../img/drivers.png);	
+}
+.panelCoverage{
+	background-image:url(../img/coverage.png);
+}
+.panelIncidents{
+	background-image:url(../img/incidents.png);
+}
+.panelContact{
+	background-image:url(../img/contact.png);	
+}
